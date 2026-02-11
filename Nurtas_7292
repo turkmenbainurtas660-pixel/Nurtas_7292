@@ -71,30 +71,23 @@
     </style>
 </head>
 <body>
-
 <div class="box">
     <h2>🎧 AI Музыкалық Бот</h2>
-
     <audio controls>
         <source src="music.mp3" type="audio/mpeg">
         Музыка қолдамайды
     </audio>
 
     <div class="chat" id="chat"></div>
-
     <textarea id="message" placeholder="AI ботқа жаз..."></textarea>
     <button onclick="sendMessage()">Жіберу</button>
 </div>
-
 <script>
 async function sendMessage() {
     const msg = document.getElementById("message").value;
     const chat = document.getElementById("chat");
-
     if (!msg) return;
-
-    chat.innerHTML += <div class="user">👤 Сен: ${msg}</div>;
-    document.getElementById("message").value = "";
+    chat.innerHTML += <div class="user">👤 Сен: ${msg}</div>; document.getElementById("message").value = "";
 
     try {
         const response = await fetch(
@@ -105,16 +98,13 @@ async function sendMessage() {
                 body: JSON.stringify({ message: msg })
             }
         );
-
         const reply = await response.text();
         chat.innerHTML += <div class="bot">🤖 AI: ${reply}</div>;
         chat.scrollTop = chat.scrollHeight;
-
     } catch (e) {
         chat.innerHTML += <div class="bot">⚠️ Қате шықты</div>;
     }
 }
 </script>
-
 </body>
 </html>
