@@ -1,180 +1,167 @@
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { ExternalLink } from '@/components/external-link';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+// Санаттар тізімі (Categories)
+const categories = [
+  { id: '1', name: 'Frash Fruits & Vegetable', color: '#53B17515', borderColor: '#53B17530', image: 'https://cdn-icons-png.flaticon.com/512/1147/1147805.png' },
+  { id: '2', name: 'Cooking Oil & Ghee', color: '#F8A44C15', borderColor: '#F8A44C30', image: 'https://cdn-icons-png.flaticon.com/512/3076/3076879.png' },
+  { id: '3', name: 'Meat & Fish', color: '#F7A59315', borderColor: '#F7A59330', image: 'https://cdn-icons-png.flaticon.com/512/3082/3082060.png' },
+  { id: '4', name: 'Bakery & Snacks', color: '#D3B0E015', borderColor: '#D3B0E030', image: 'https://cdn-icons-png.flaticon.com/512/3081/3081986.png' },
+  { id: '5', name: 'Dairy & Eggs', color: '#FDE59815', borderColor: '#FDE59830', image: 'https://cdn-icons-png.flaticon.com/512/3054/3054942.png' },
+  { id: '6', name: 'Beverages', color: '#B7DFF515', borderColor: '#B7DFF530', image: 'https://cdn-icons-png.flaticon.com/512/3050/3050139.png' },
+];
 
-export default function TabTwoScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
-  };
-  const theme = useTheme();
+export default function ExploreScreen() {
+  const router = useRouter();
 
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-    web: {
-      paddingTop: Spacing.six,
-      paddingBottom: Spacing.four,
-    },
-  });
+  const renderCategoryItem = ({ item }: { item: any }) => (
+    <TouchableOpacity 
+      style={[styles.card, { backgroundColor: item.color, borderColor: item.borderColor }]}
+      onPress={() => alert(`Санат: ${item.name}`)}
+    >
+      <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="contain" />
+      <Text style={styles.cardTitle}>{item.name}</Text>
+    </TouchableOpacity>
+  );
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="subtitle">Explore</ThemedText>
-          <ThemedText style={styles.centerText} themeColor="textSecondary">
-            This starter app includes example{'\n'}code to help you get started.
-          </ThemedText>
+    <View style={styles.container}>
+      {/* Заголовок */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Find Products</Text>
+      </View>
 
-          <ExternalLink href="https://docs.expo.dev" asChild>
-            <Pressable style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundElement" style={styles.linkButton}>
-                <ThemedText type="link">Expo documentation</ThemedText>
-                <SymbolView
-                  tintColor={theme.text}
-                  name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }}
-                  size={12}
-                />
-              </ThemedView>
-            </Pressable>
-          </ExternalLink>
-        </ThemedView>
+      {/* Поиск */}
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#7C7C7C" style={styles.searchIcon} />
+        <TextInput 
+          placeholder="Search Store" 
+          placeholderTextColor="#7C7C7C" 
+          style={styles.searchInput} 
+        />
+      </View>
 
-        <ThemedView style={styles.sectionsWrapper}>
-          <Collapsible title="File-based routing">
-            <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
-            </ThemedText>
-            <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/router/introduction">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+      {/* Санаттардың сеткасы (Grid) */}
+      <FlatList 
+        data={categories}
+        renderItem={renderCategoryItem}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        contentContainerStyle={styles.gridContainer}
+        showsVerticalScrollIndicator={false}
+      />
 
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
-              />
-            </ThemedView>
-          </Collapsible>
+      {/* Төменгі навигация панелі */}
+      <View style={styles.bottomTab}>
+        <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/home')}>
+          <Ionicons name="storefront-outline" size={24} color="#181725" />
+          <Text style={styles.tabLabel}>Shop</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.tabItem}>
+          <Ionicons name="search" size={24} color="#53B175" />
+          <Text style={[styles.tabLabel, { color: '#53B175' }]}>Explore</Text>
+        </TouchableOpacity>
 
-          <Collapsible title="Images">
-            <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
-            </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+        <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/cart')}>
+          <Ionicons name="cart-outline" size={24} color="#181725" />
+          <Text style={styles.tabLabel}>Cart</Text>
+        </TouchableOpacity>
 
-          <Collapsible title="Light and dark mode components">
-            <ThemedText type="small">
-              This template has light and dark mode support. The{' '}
-              <ThemedText type="code">useColorScheme()</ThemedText> hook lets you inspect what the
-              user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+        <TouchableOpacity style={styles.tabItem}>
+          <Ionicons name="heart-outline" size={24} color="#181725" />
+          <Text style={styles.tabLabel}>Favourite</Text>
+        </TouchableOpacity>
 
-          <Collapsible title="Animations">
-            <ThemedText type="small">
-              This template includes an example of an animated component. The{' '}
-              <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
-              the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
-              animate opening this hint.
-            </ThemedText>
-          </Collapsible>
-        </ThemedView>
-        {Platform.OS === 'web' && <WebBadge />}
-      </ThemedView>
-    </ScrollView>
+        <TouchableOpacity style={styles.tabItem}>
+          <Ionicons name="person-outline" size={24} color="#181725" />
+          <Text style={styles.tabLabel}>Account</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
   container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 60,
   },
-  titleContainer: {
-    gap: Spacing.three,
+  header: {
     alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
+    marginBottom: 20,
   },
-  centerText: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#181725',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F2F3F2',
+    borderRadius: 15,
+    marginHorizontal: 24,
+    paddingHorizontal: 15,
+    height: 50,
+    marginBottom: 20,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#181725',
+  },
+  gridContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 100,
+  },
+  card: {
+    flex: 1,
+    height: 190,
+    margin: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  cardImage: {
+    width: 90,
+    height: 75,
+    marginBottom: 15,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#181725',
     textAlign: 'center',
   },
-  pressed: {
-    opacity: 0.7,
-  },
-  linkButton: {
+  bottomTab: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: 'center',
-    gap: Spacing.one,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E2E2E2',
+    elevation: 8,
+  },
+  tabItem: {
     alignItems: 'center',
   },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: 'center',
-  },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
+  tabLabel: {
+    fontSize: 12,
+    color: '#181725',
+    marginTop: 4,
+    fontWeight: '500',
   },
 });
